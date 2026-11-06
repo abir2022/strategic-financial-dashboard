@@ -5,38 +5,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NexaGroup — Strategic Financial Cockpit (Demo)</title>
 <meta name="description" content="Zero-backend static demo of a multi-SBU financial cockpit: budget vs actual, trends, marketing ROMI, workforce and production &amp; inventory panels. All figures synthetic.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0B1020;
-    --bg-soft:#0E1428;
-    --panel:#131B31;
-    --panel-2:#0F1626;
-    --border:#243250;
-    --border-soft:rgba(255,255,255,.06);
-    --text:#E8EDF8;
-    --muted:#93A2BE;
-    --muted-2:#6F7F9C;
-    --accent:#4DA3FF;
-    --accent-2:#7C5CFF;
-    --positive:#34D399;
-    --negative:#F87171;
-    --warning:#FBBF24;
-    --radius:14px;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 30px -12px rgba(0,0,0,.55);
-    --sidebar:280px;
+    --bg:#0F172A; --surface:#111827; --surface-2:#1E293B; --line:#334155;
+    --ink:#F8FAFC; --ink-2:#CBD5E1; --ink-3:#94A3B8;
+    --brand:#1E40AF; --brand-2:#3B82F6; --accent:#D97706; --accent-2:#F59E0B;
+    --ok:#10B981; --warn:#F59E0B; --bad:#DC2626;
+    --r-sm:8px; --r-md:12px; --r-lg:16px;
+    --sp-1:8px; --sp-2:16px; --sp-3:24px; --sp-4:32px; --sp-5:48px;
+    --shadow-1:0 1px 2px rgba(0,0,0,.4); --shadow-2:0 8px 24px rgba(0,0,0,.35);
+    --font-head:'Fira Code',ui-monospace,monospace;   /* numbers, KPIs, h1-h3 */
+    --font-body:'Fira Sans',system-ui,sans-serif;
+    /* legacy aliases -> spec values (keeps existing selectors functional; violet removed) */
+    --bg-soft:var(--surface); --panel:var(--surface); --panel-2:var(--surface-2);
+    --border:var(--line); --border-soft:rgba(148,163,184,.18);
+    --text:var(--ink); --muted:var(--ink-2); --muted-2:var(--ink-3);
+    --positive:var(--ok); --negative:var(--bad); --warning:var(--warn);
+    --radius:var(--r-md); --shadow:var(--shadow-2);
+    --sidebar:264px; --topbar-h:60px; --row-tint:rgba(148,163,184,.07);
+    --grad-brand:linear-gradient(135deg,var(--brand),var(--brand-2));
+    color-scheme:dark;
+  }
+  html[data-theme="light"]{
+    --bg:#F1F5F9; --surface:#FFFFFF; --surface-2:#F8FAFC; --line:#CBD5E1;
+    --ink:#0F172A; --ink-2:#334155; --ink-3:#54637a;
+    --brand:#1E40AF; --brand-2:#2563EB; --accent:#B45309; --accent-2:#D97706;
+    --border-soft:rgba(51,65,85,.15);
+    --shadow-1:0 1px 2px rgba(15,23,42,.08); --shadow-2:0 10px 28px rgba(15,23,42,.12);
+    --row-tint:rgba(51,65,85,.05);
+    color-scheme:light;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
     background:
-      radial-gradient(1100px 600px at 85% -10%, rgba(124,92,255,.16), transparent 60%),
-      radial-gradient(900px 520px at -5% 5%, rgba(77,163,255,.14), transparent 55%),
+      radial-gradient(1100px 600px at 88% -12%, rgba(59,130,246,.14), transparent 60%),
+      radial-gradient(900px 520px at -6% 4%, rgba(217,119,6,.10), transparent 55%),
       var(--bg);
-    color:var(--text);
-    font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-    font-size:14px;
-    line-height:1.45;
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.5;
     -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
   }
   .app{display:grid;grid-template-columns:var(--sidebar) 1fr;min-height:100vh}
 
@@ -182,22 +196,159 @@
     .g2,.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   }
   @media (max-width:560px){ .g2,.g3,.kpis{grid-template-columns:minmax(0,1fr)} }
+
+  /* ==================================================================
+     POLISH + SPEC-COMPLIANCE LAYER (authored to DESIGN-SPEC v2)
+     ================================================================== */
+  h1,h2,h3,h4{font-family:var(--font-head)}
+  button,.btn,.chip,.toggle button,.tag,select{cursor:pointer}
+
+  /* ---- sticky top bar (app chrome) ---- */
+  .topbar{
+    position:sticky;top:0;z-index:50;height:var(--topbar-h);
+    display:flex;align-items:center;gap:12px;
+    padding:0 clamp(16px,3vw,30px);
+    background:color-mix(in srgb,var(--surface) 92%,transparent);
+    backdrop-filter:saturate(140%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  @supports not (backdrop-filter:blur(2px)){ .topbar{background:var(--surface)} }
+  .topbar .mark{
+    width:30px;height:30px;border-radius:9px;flex:0 0 auto;display:grid;place-items:center;
+    background:var(--grad-brand);color:#fff;font-family:var(--font-head);font-weight:700;font-size:15px;
+    box-shadow:var(--shadow-1);
+  }
+  .topbar .tb-id{display:flex;flex-direction:column;line-height:1.15}
+  .topbar .name{font-family:var(--font-head);font-size:14px;font-weight:600;color:var(--ink);letter-spacing:.2px}
+  .topbar .desc{font-size:11.5px;color:var(--ink-3)}
+  .topbar .spacer{margin-left:auto}
+  .synth{
+    display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;
+    font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--warn);background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.32);
+  }
+  .synth::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--warn)}
+  .tbtn{
+    width:40px;height:36px;border-radius:var(--r-sm);display:grid;place-items:center;
+    background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);
+    transition:transform .18s ease,border-color .18s ease,color .18s ease;
+  }
+  .tbtn:hover{color:var(--ink);border-color:var(--brand-2);transform:translateY(-2px)}
+  .tbtn:active{transform:translateY(0)}
+  .tbtn svg{width:17px;height:17px;display:block}
+
+  /* ---- app shell under the top bar ---- */
+  .app{min-height:calc(100vh - var(--topbar-h))}
+  .sidebar{top:var(--topbar-h);height:calc(100vh - var(--topbar-h));background:var(--surface)}
+  main{padding:22px clamp(16px,3vw,30px) 56px}
+  section{scroll-margin-top:calc(var(--topbar-h) + 14px)}
+
+  /* ---- unified card (one style, one radius, flat surface) ---- */
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+    box-shadow:var(--shadow-1);padding:16px;
+  }
+  .card h4{font-size:12.5px;color:var(--ink)}
+
+  /* ---- KPI cards: hover lift + delta chips ---- */
+  .kpi{position:relative;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+  .kpi::before{content:"";position:absolute;left:0;top:0;height:100%;width:3px;background:var(--brand-2);opacity:0;transition:opacity .2s ease}
+  .kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-2);border-color:var(--brand-2)}
+  .kpi:hover::before{opacity:.9}
+  .kpi .lab{font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:.01em;text-transform:none;color:var(--ink-3)}
+  .kpi .val{font-family:var(--font-head);font-size:30px;font-weight:600;line-height:1.1;margin:8px 0 8px;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+  .kpi .val small{font-size:13px;font-weight:600;color:var(--ink-3);margin-left:4px}
+  .kpi .dlt{
+    display:inline-flex;align-items:center;gap:5px;margin:0;padding:3px 9px;border-radius:999px;
+    font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;
+    background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line);
+  }
+  .kpi .dlt.up{color:var(--ok);background:rgba(16,185,129,.13);border-color:rgba(16,185,129,.32)}
+  .kpi .dlt.down{color:var(--bad);background:rgba(220,38,38,.13);border-color:rgba(220,38,38,.32)}
+  .kpi .dlt.flat{color:var(--warn);background:rgba(245,158,11,.13);border-color:rgba(245,158,11,.32)}
+  .kpi .dlt b{font-family:var(--font-head);font-weight:700}
+
+  /* ---- section headers: eyebrow + mono heading ---- */
+  .sec-h{flex-wrap:wrap}
+  .sec-h .eyebrow{flex:0 0 100%;order:-1;font-family:var(--font-body);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+  .sec-h h3{font-family:var(--font-head);font-size:20px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+  .sec-h p{font-size:13px;color:var(--ink-3)}
+
+  /* ---- buttons: primary = brand-2, hover lift / active press ---- */
+  .btn{border-radius:var(--r-sm);transition:transform .16s ease,background .16s ease,border-color .16s ease,color .16s ease,filter .16s ease}
+  .btn:hover{border-color:var(--brand-2);color:var(--ink);transform:translateY(-2px)}
+  .btn:active{transform:translateY(0)}
+  .btn.primary{background:var(--brand);color:#fff;border-color:transparent}
+  .btn.primary:hover{filter:brightness(1.12);color:#fff;transform:translateY(-2px)}
+  .btn.primary:active{transform:translateY(0)}
+  .chip:hover{border-color:var(--brand-2);transform:translateY(-1px)}
+  .chip input{accent-color:var(--brand-2)}
+  .toggle button{border-radius:999px;transition:.16s;cursor:pointer}
+  .toggle button.on{background:rgba(59,130,246,.18);color:var(--brand-2);border-color:rgba(59,130,246,.5)}
+
+  /* ---- tables ---- */
+  thead th{background:var(--surface-2);color:var(--ink-3);border-bottom:1px solid var(--line)}
+  tbody tr:hover{background:var(--row-tint)}
+  .tag.ok{color:var(--ok);border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.12)}
+  .tag.watch{color:var(--warn);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.12)}
+  .tag.bad{color:var(--bad);border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.12)}
+
+  /* ---- focus-visible rings ---- */
+  :where(a,button,input,select,.chip,.btn,.tag,[data-preset],.toggle button,#themeToggle):focus-visible{
+    outline:2px solid var(--brand-2);outline-offset:2px;border-radius:6px;
+  }
+
+  /* ---- hero chart sized taller ---- */
+  .canvas-wrap.tall{height:340px}
+
+  /* ---- footer link ---- */
+  footer a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--border-soft)}
+  footer a:hover{color:var(--brand-2);border-bottom-color:var(--brand-2)}
+
+  /* ---- load-in stagger: first paint only, skipped on reduced motion ---- */
+  @keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .boot .kpis>.kpi{animation:cardIn .34s cubic-bezier(.2,.7,.3,1) both}
+  .boot .kpis>.kpi:nth-child(2){animation-delay:.06s}
+  .boot .kpis>.kpi:nth-child(3){animation-delay:.12s}
+  .boot .kpis>.kpi:nth-child(4){animation-delay:.18s}
+  .boot .kpis>.kpi:nth-child(5){animation-delay:.24s}
+  .boot .kpis>.kpi:nth-child(6){animation-delay:.28s}
+
+  /* ---- responsive refinement ---- */
+  @media (max-width:1024px){ .topbar .desc{display:none} }
+  @media (max-width:900px){
+    .app{grid-template-columns:1fr}
+    .sidebar{position:static;top:auto;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+    main{padding:20px 16px 48px}
+  }
+  @media (max-width:640px){ .synth{display:none} .kpi .val{font-size:26px} }
+
+  /* ---- reduced motion ---- */
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+    .kpi:hover,.btn:hover,.tbtn:hover,.chip:hover{transform:none}
+  }
 </style>
 </head>
 <body>
+  <!-- ============ STICKY TOP BAR (product mark · synthetic chip · theme toggle) ============ -->
+  <header class="topbar">
+    <span class="mark" aria-hidden="true">N</span>
+    <div class="tb-id">
+      <span class="name">NexaGroup</span>
+      <span class="desc">Strategic Financial Cockpit</span>
+    </div>
+    <span class="spacer"></span>
+    <span class="synth">Synthetic demo data</span>
+    <button class="tbtn" id="themeToggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">
+      <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>
+      <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </header>
 <div class="app">
 
   <!-- ============ SIDEBAR ============ -->
   <aside class="sidebar">
-    <div class="brand">
-      <div class="logo">N</div>
-      <div>
-        <h1>NexaGroup</h1>
-        <p>Strategic Planning Cockpit</p>
-      </div>
-    </div>
-    <span class="badge">Demo mode · synthetic data</span>
-
     <div class="side-h">Filters</div>
     <div class="field">
       <label for="fFrom">Period from</label>
@@ -256,13 +407,14 @@
 
     <!-- KPIs -->
     <section id="sec-kpi">
-      <div class="sec-h"><h3>Headline KPIs</h3><p>selected SBUs, selected period · BDT crore</p></div>
+      <div class="sec-h"><span class="eyebrow">Group performance</span><h3>Headline KPIs</h3><p>selected SBUs, selected period · BDT crore</p></div>
       <div class="grid kpis" id="kpis"></div>
     </section>
 
     <!-- Budget vs actual -->
     <section id="sec-budget">
       <div class="sec-h">
+        <span class="eyebrow">Budget control</span>
         <h3>Budget vs Actual</h3>
         <p>the core control question: did each unit deliver what it committed to?</p>
         <div class="toggle" id="toggleBudget">
@@ -298,7 +450,7 @@
 
     <!-- Financial -->
     <section id="sec-financial">
-      <div class="sec-h"><h3>Financial trends</h3><p>monthly revenue lines and the cost structure behind them</p></div>
+      <div class="sec-h"><span class="eyebrow">Revenue &amp; cost</span><h3>Financial trends</h3><p>monthly revenue lines and the cost structure behind them</p></div>
       <div class="grid g21">
         <div class="card">
           <h4>Monthly revenue by SBU</h4>
@@ -315,7 +467,7 @@
 
     <!-- Sales -->
     <section id="sec-sales">
-      <div class="sec-h"><h3>Sales performance</h3><p>order value and order flow — the demand signal ahead of recognised revenue</p></div>
+      <div class="sec-h"><span class="eyebrow">Sales pipeline</span><h3>Sales performance</h3><p>order value and order flow — the demand signal ahead of recognised revenue</p></div>
       <div class="card">
         <h4>Sales order value vs order count</h4>
         <p class="hint">Line = order value (BDT crore, left axis) · bars = orders placed (right axis)</p>
@@ -325,7 +477,7 @@
 
     <!-- Marketing / ROMI -->
     <section id="sec-marketing">
-      <div class="sec-h"><h3>Marketing spend &amp; ROMI</h3><p>incremental revenue attributed to each campaign over its organic baseline</p></div>
+      <div class="sec-h"><span class="eyebrow">Return on marketing</span><h3>Marketing spend &amp; ROMI</h3><p>incremental revenue attributed to each campaign over its organic baseline</p></div>
       <div class="grid g2">
         <div class="card">
           <h4>Spend by activity category</h4>
@@ -354,7 +506,7 @@
 
     <!-- People -->
     <section id="sec-people">
-      <div class="sec-h"><h3>Employee summary</h3><p>workforce spread and the revenue each person carries</p></div>
+      <div class="sec-h"><span class="eyebrow">Workforce</span><h3>Employee summary</h3><p>workforce spread and the revenue each person carries</p></div>
       <div class="grid g21">
         <div class="card">
           <h4>Headcount by department</h4>
@@ -382,7 +534,7 @@
 
     <!-- Ops -->
     <section id="sec-ops">
-      <div class="sec-h"><h3>Production &amp; inventory</h3><p>conversion, throughput and the working capital parked in stock</p></div>
+      <div class="sec-h"><span class="eyebrow">Operations</span><h3>Production &amp; inventory</h3><p>conversion, throughput and the working capital parked in stock</p></div>
       <div class="grid g2">
         <div class="card">
           <h4>Production output by month</h4>
@@ -415,7 +567,7 @@
 
     <!-- Data -->
     <section id="sec-data">
-      <div class="sec-h"><h3>Monthly data table</h3><p>the filtered fact table every chart above is built from</p></div>
+      <div class="sec-h"><span class="eyebrow">Raw data</span><h3>Monthly data table</h3><p>the filtered fact table every chart above is built from</p></div>
       <div class="card">
         <div class="toolbar" style="margin:0 0 12px">
           <button class="btn primary" id="btnCsv">Export filtered data (CSV)</button>
@@ -440,7 +592,7 @@
     </section>
 
     <footer>
-      <span>NexaGroup Strategic Financial Cockpit — static portfolio demo.</span>
+      <span>NexaGroup Strategic Financial Cockpit — static portfolio demo · <a href="PROFILE.md">Methodology &amp; data design</a></span>
       <span>Built by Abir</span>
     </footer>
   </main>
@@ -735,24 +887,37 @@ document.querySelectorAll("#toggleBudget button").forEach(function (b) {
 });
 
 /* ============================================================
-   5. CHART HELPERS
+   5. CHART HELPERS  (theme-aware: reads live CSS tokens)
    ============================================================ */
-Chart.defaults.color = "#93A2BE";
-Chart.defaults.font.size = 11;
-Chart.defaults.font.family = "ui-sans-serif,-apple-system,'Segoe UI',Roboto,Arial,sans-serif";
-Chart.defaults.borderColor = "rgba(255,255,255,.06)";
-Chart.defaults.plugins.legend.labels.boxWidth = 10;
-Chart.defaults.plugins.legend.labels.boxHeight = 10;
-Chart.defaults.plugins.legend.labels.usePointStyle = true;
-Chart.defaults.plugins.tooltip.backgroundColor = "#0B1020";
-Chart.defaults.plugins.tooltip.borderColor = "#243250";
-Chart.defaults.plugins.tooltip.borderWidth = 1;
-Chart.defaults.plugins.tooltip.padding = 10;
-Chart.defaults.plugins.tooltip.titleColor = "#E8EDF8";
-Chart.defaults.plugins.tooltip.bodyColor = "#93A2BE";
-
-const GRID = { color: "rgba(255,255,255,.05)", drawTicks: false };
+const GRID = { color: "rgba(148,163,184,.15)", drawTicks: false };
 const charts = {};
+
+function themeTokens() {
+  const cs = getComputedStyle(document.documentElement);
+  const g = function (n, d) { const v = (cs.getPropertyValue(n) || "").trim(); return v || d; };
+  return {
+    ink: g("--ink", "#F8FAFC"), ink2: g("--ink-2", "#CBD5E1"), ink3: g("--ink-3", "#94A3B8"),
+    surface: g("--surface", "#111827"), line: g("--line", "#334155")
+  };
+}
+function applyChartTheme() {
+  const T = themeTokens();
+  Chart.defaults.color = T.ink3;
+  Chart.defaults.font.size = 12;
+  Chart.defaults.font.family = "'Fira Sans',system-ui,sans-serif";
+  Chart.defaults.borderColor = "rgba(148,163,184,.15)";
+  GRID.color = "rgba(148,163,184,.15)";
+  Chart.defaults.plugins.legend.labels.boxWidth = 10;
+  Chart.defaults.plugins.legend.labels.boxHeight = 10;
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  Chart.defaults.plugins.legend.labels.color = T.ink2;
+  Chart.defaults.plugins.tooltip.backgroundColor = T.surface;
+  Chart.defaults.plugins.tooltip.borderColor = T.line;
+  Chart.defaults.plugins.tooltip.borderWidth = 1;
+  Chart.defaults.plugins.tooltip.padding = 10;
+  Chart.defaults.plugins.tooltip.titleColor = T.ink;
+  Chart.defaults.plugins.tooltip.bodyColor = T.ink2;
+}
 
 function draw(id, cfg) {
   if (charts[id]) charts[id].destroy();
@@ -975,7 +1140,7 @@ function render() {
       datasets: [
         { type: "line", label: "Sales order value (Cr)",
           data: idx.map(function (i) { return Number(sum(sbus.map(function (s) { return s.salesValue[i]; })).toFixed(1)); }),
-          borderColor: "#7C5CFF", backgroundColor: "#7C5CFF", borderWidth: 2, tension: .3,
+          borderColor: "#D97706", backgroundColor: "#D97706", borderWidth: 2, tension: .3,
           pointRadius: 2, yAxisID: "y", fill: false },
         { type: "bar", label: "Orders placed",
           data: idx.map(function (i) { return sum(sbus.map(function (s) { return s.orders[i]; })); }),
@@ -1145,8 +1310,8 @@ function render() {
     data: {
       labels: mixKeys.length ? mixKeys : ["—"],
       datasets: [{ data: mixKeys.map(function (k) { return Number(mix[k].toFixed(1)); }),
-        backgroundColor: ["rgba(77,163,255,.5)", "rgba(124,92,255,.5)", "rgba(251,191,36,.5)"],
-        borderColor: ["#4DA3FF", "#7C5CFF", "#FBBF24"], borderWidth: 1 }]
+        backgroundColor: ["rgba(59,130,246,.5)", "rgba(217,119,6,.5)", "rgba(16,185,129,.5)"],
+        borderColor: ["#3B82F6", "#D97706", "#10B981"], borderWidth: 1 }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
@@ -1211,7 +1376,33 @@ $("btnCsvCampaigns").addEventListener("click", function () {
 });
 
 buildFilters();
+applyChartTheme();
 render();
+
+/* ---- theme toggle (dark default · light variant) ---- */
+(function () {
+  const root = document.documentElement, KEY = "sfd-theme";
+  const sun = $("iconSun"), moon = $("iconMoon"), bt = $("themeToggle");
+  function syncUI() {
+    const light = root.getAttribute("data-theme") === "light";
+    if (sun) sun.style.display = light ? "none" : "block";
+    if (moon) moon.style.display = light ? "block" : "none";
+    if (bt) bt.setAttribute("aria-pressed", light ? "true" : "false");
+  }
+  let saved = null; try { saved = localStorage.getItem(KEY); } catch (e) {}
+  if (saved === "light") root.setAttribute("data-theme", "light");
+  syncUI();
+  if (bt) bt.addEventListener("click", function () {
+    const next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+    if (next === "dark") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", "light");
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    syncUI(); applyChartTheme(); render();
+  });
+})();
+
+/* ---- one first-paint stagger, then disarm so filter changes don't re-animate ---- */
+document.body.classList.add("boot");
+setTimeout(function () { document.body.classList.remove("boot"); }, 620);
 </script>
 </body>
 </html>
