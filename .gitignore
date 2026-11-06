@@ -1,0 +1,12 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Local-only
+*.env
+.env
+node_modules/
+
+# Never commit credentials of any kind
+secrets.toml
+config.py
