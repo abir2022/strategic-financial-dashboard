@@ -1,3 +1,5 @@
+![Strategic Financial Dashboard](assets/banner.svg)
+
 # Strategic Financial Dashboard
 
 A zero-backend, single-file financial cockpit for a fictional conglomerate (**NexaGroup**): budget vs
